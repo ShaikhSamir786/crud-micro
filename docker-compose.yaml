@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  mainserver:
+    build: ./mainserver
+    ports:
+      - "8000:8000"
+    environment:
+      - CREATE_SERVER_URL=http://createserver:8001
+      - READ_SERVER_URL=http://readserver:8002
+      - UPDATE_SERVER_URL=http://updateserver:8003
+      - DELETE_SERVER_URL=http://deleteserver:8004
+    depends_on:
+      - createserver
+      - readserver
+      - updateserver
+      - deleteserver
+
+  createserver:
+    build: ./createserver
+    ports:
+      - "8001:8001"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/crud-micro
+    depends_on:
+      - mongodb
+
+  readserver:
+    build: ./readserver
+    ports:
+      - "8002:8002"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/crud-micro
+    depends_on:
+      - mongodb
+
+  updateserver:
+    build: ./updateserver
+    ports:
+      - "8003:8003"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/crud-micro
+    depends_on:
+      - mongodb
+
+  deleteserver:
+    build: ./deleteserver
+    ports:
+      - "8004:8004"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/crud-micro
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data:
