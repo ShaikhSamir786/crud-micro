@@ -59,5 +59,21 @@ services:
     depends_on:
       - mongodb
 
+  client:
+    build: ./client
+    ports:
+      - "80:80"
+
+  nginx-gateway:
+    build: ./nginx-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - createserver
+      - readserver
+      - updateserver
+      - deleteserver
+      - client
+
 volumes:
   mongodb_data:
